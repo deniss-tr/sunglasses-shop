@@ -22,10 +22,18 @@ CREATE TABLE products (
 
 CREATE TABLE orders (
 	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	status VARCHAR(50),
+	date DATE NOT NULL,
+	price INT,
+	address VARCHAR(100));
+
+CREATE TABLE orders_items (
+	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	count INT,
-	address VARCHAR(100),
-	product_id INT NOT NULL,
 	color VARCHAR(50),
+	order_id INT NOT NULL,
+	product_id INT NOT NULL,
+	FOREIGN KEY (order_id) REFERENCES orders(id),
 	FOREIGN KEY (product_id) REFERENCES products(id));
 
 
@@ -40,4 +48,4 @@ INSERT INTO products (name, price, colors_id, image, description) VALUES ('Ray-B
 INSERT INTO products (name, price, colors_id, image, description) VALUES ('Boss', '90', 2, 'images/sun1.jpg', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.');
 INSERT INTO products (name, price, colors_id, image, description) VALUES ('Gucci', '140', 3, 'images/sun3.jpg', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.');
 
-INSERT INTO orders (count, address, product_id, color) VALUES (2, 'riga', 1, 'black');
+

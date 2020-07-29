@@ -55,4 +55,22 @@ class Connector extends Dbh {
         $result = $this->createObjects($fullProduct);
         return $result[0];
     }
+    public function saveOrder($date)
+    {
+        $stmt = $this->connect()->prepare("INSERT INTO orders(status, date) VALUES(?, ?)");
+        $stmt->execute(['waiting', $date]);
+        $orderId = $this->connect()->lastInsertId();
+        return $orderId;
+    }
+    public function saveOrderItems($orderId, $productId, $count, $color)
+    {
+        $stmt = $this->connect()->prepare("INSERT INTO orders_items(count, color, order_id, product_id) VALUES(?, ?, ?, ?)");
+        return $stmt->execute([$count, $color, $orderId, $productId]);
+    }
+    public function updateOrder($orderId, $address, $status, $price)
+    {
+        $sql = "UPDATE orders SET status = '$status', address = '$address', price = '$price' WHERE id = $orderId";
+        $data = $this->connect()->query($sql);
+        return $data;
+    }
 }

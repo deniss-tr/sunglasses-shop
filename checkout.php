@@ -2,7 +2,8 @@
 
 	require "app/Controller.php";
 	$controller = new Controller();
-	
+	$arr = $controller->prepareCheckout();
+	$all = $arr['items'];
 ?>
 <!DOCTYPE html>
 <html>
@@ -20,23 +21,30 @@
       include 'templates\header.php';
     ?>
 	<div class="wrapper">
-		<form class="checkout">
+		<form class="checkout" method="POST" action="payment.php">
 			<h1>Total</h1>
 			<div class="product-list">
 				<ul>
+				<?php
+					$sums = Array(); 
+					foreach($all as $item): 
+					$fullItemPrice = $item['product']->getPrice() * $item['count'];
+					$sums[] = $fullItemPrice;
+				?>
 					<li>
-						<span class="name">Test name</span>
-						<span class="color">Test color</span>
-						<span class="price">100.00 $</span>
+						<span class="name"><?= $item['product']->getName() ?></span>
+						<span class="color"><?= $item['color'] ?></span>
+						<span class="price"><?= $item['product']->getPrice() ?>.00 $</span>
+						<span> x </span>
+						<span><?= $item['count'] ?></span>
+						<span> = </span>
+						<span><?= $fullItemPrice ?>.00 $</span>
 					</li>
-
-					<li>
-						<span class="name">Test name</span>
-						<span class="color">Test color</span>
-						<span class="price">100.00 $</span>
-					</li>
+				<?php endforeach; 
+					$total = array_sum($sums);
+				?>
 				</ul>
-				<p class="total-price">Total price <span>200.00$</span></p>
+				<p class="total-price">Total price <span><?= $total ?>.00$</span></p>
 			</div>
 
 			<select class="select select-delivery" name="delivery" required>
@@ -52,8 +60,8 @@
 				<p>You can pick up your order at:</p>
 				<p>Rīga, Rīgas iela 1 - 1</p>
 			</div>
-			
-
+			<input type="hidden" name="order_id" value="<?= $arr['orderId'] ?>">
+			<input type="hidden" name="total_price" value="<?= $total ?>">
 			<input type="submit" class="btn checkout-btn" value="CHECKOUT">
 		</form>
 		

@@ -20,7 +20,7 @@
     ?>
 	<div class="wrapper">
 		<main class="table">
-			<form action="checkout.php">
+			<form action="checkout.php" method="POST">
 				<table class="table-list">
 					<thead>
 						<tr>
@@ -38,13 +38,15 @@
 						$product = $connector->getProduct($item['productId']);
 					?>
 						<tr class="product-row" product_nr="<?= $nr ?>">
+							<input type="hidden" name="product_id[]" value="<?= $product->getId() ?>">
+							<input type="hidden" name="product_color[]" value="<?= $item['color'] ?>">
 							<td><?= $nr ?></td>
 							<td><?= $product->getName() ?></td>
 							<td><span class="item-price"><?= $product->getPrice() ?></span>.00 $</td>
 							<td><?= $item['color'] ?></td>
 							<td>
 								<button class="table-btn q plus">+</button> 
-								<input type="number" class="item_count" value="1" min="1" max="10" readonly> 
+								<input type="number" name="item_count[]" class="item_count" value="1" min="1" max="10" readonly> 
 								<button class="table-btn q minus">-</button>
 							</td>
 							<td><button class="table-btn del"><i class="fas fa-trash-alt"></i></button></td>
