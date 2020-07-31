@@ -1,8 +1,8 @@
 <?php
-
+//	session_start();
 	require "app/Controller.php";
 	$controller = new Controller();
-	
+	$controller->login();
 ?>
 
 <!DOCTYPE html>
@@ -19,10 +19,11 @@
       include 'templates\header.php';
     ?>
 	<div class="wrapper">
-		<form class="login-form" method="POST" action="">
+		<form class="login-form" method="POST" action="login.php">
 				<h1 class="login-title">LOG IN</h1>
 				<input class="input-text" type="text" name="login" required placeholder="Your login" autofocus>
 				<input class="input-text" type="password" name="password" placeholder="Password" required>
+				<?= $message ?>
 				<input class="btn btn_submit" type="submit" value="Login">
 			</form>
 	</div>

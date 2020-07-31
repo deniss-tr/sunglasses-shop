@@ -45,9 +45,9 @@
 							<td><span class="item-price"><?= $product->getPrice() ?></span>.00 $</td>
 							<td><?= $item['color'] ?></td>
 							<td>
-								<button class="table-btn q plus">+</button> 
+								<input type="button" class="table-btn q plus" value="+">
 								<input type="number" name="item_count[]" class="item_count" value="1" min="1" max="10" readonly> 
-								<button class="table-btn q minus">-</button>
+								<input type="button" class="table-btn q minus" value="-">
 							</td>
 							<td><button class="table-btn del"><i class="fas fa-trash-alt"></i></button></td>
 						</tr>

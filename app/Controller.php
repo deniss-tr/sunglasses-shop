@@ -1,22 +1,31 @@
 <?php
 require_once "app/Dbh.php";
 require_once "app/Product.php";
+require_once "app/Auth.php";
 require_once "app/Connector.php";
 
 class Controller {
+    protected $connector;
+    protected $auth;
+
+    public function __construct()
+    {
+      $this->auth = new Auth();
+      $this->connector = new Connector();
+    }
 
     //// return all products on index page
     public function index()
     {
-      $connector = new Connector();
-      return $connector->getAllProducts();
+
+      return $this->connector->getAllProducts();
     }
 
     public function product()
     {
       $id = $_GET['id'];
-      $connector = new Connector();
-      return $connector->getProduct($id);
+
+      return $this->connector->getProduct($id);
     }
     public function addInCart()
     {
@@ -48,10 +57,9 @@ class Controller {
       $productsCount = $_POST['item_count'];
       $productsColors = $_POST['product_color']; 
 
-      $connector = new Connector();
       $objectsArr = Array();
       foreach($productsId as $id) {
-        $objectsArr[] = $connector->getProduct($id);
+        $objectsArr[] = $this->connector->getProduct($id);
       }
       
       $count = count($objectsArr);
@@ -62,25 +70,25 @@ class Controller {
         $result[$i]['color'] = $productsColors[$i];
       }
       $date = date('Y-m-d H:i:s');
-      $orderId = $connector->saveOrder($date);
+      $orderId = $this->connector->saveOrder($date);
       foreach($result as $item) {
         $productId = $item['product']->getId();
         $count = $item['count'];
         $color = $item['color'];
-        $connector->saveOrderItems($orderId, $productId, $count, $color);
+        $this->connector->saveOrderItems($orderId, $productId, $count, $color);
       }
       
       return ['items' => $result, 'orderId' => $orderId];
     }
     public function checkout()
     {
-      $connector = new Connector();
+
       $delivery = $_POST['delivery'];
       $orderId = $_POST['order_id'];
       $price = $_POST['total_price'];
       switch ($delivery) {
         case 'Office':
-          if($connector->updateOrder($orderId, 'office', 'complete', $price)) {
+          if($this->connector->updateOrder($orderId, 'office', 'complete', $price)) {
             unset($_COOKIE['cart']);
             setcookie('cart', '', time() - 3600, '/');
             echo 'Success' . '<br>';
@@ -90,7 +98,7 @@ class Controller {
         break;
         case 'Omniva':
           $terminal = $_POST['omniva_select1'];
-          if($connector->updateOrder($orderId, $terminal, 'complete', $price)) {
+          if($this->connector->updateOrder($orderId, $terminal, 'complete', $price)) {
             unset($_COOKIE['cart']);
             setcookie('cart', '', time() - 3600, '/');
             echo 'Success' . '<br>';
@@ -98,7 +106,78 @@ class Controller {
             echo 'Failed' . '<br>';
           }
         break;
-
       }
     }
+
+    public function currentUser()
+    {
+      return $this->auth;
+    }
+
+    public function login()
+    {
+      global $message;
+      $message ='';
+      if($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $login = $_POST['login'];
+        $pass = $_POST['password'];
+        $user = $this->connector->checkUser($login, $pass);
+        if(!$user) {
+          $message ='Wrong login or password!';
+          return;
+        }
+        $this->auth->setUser($user['login'], $user['status']);
+        header("Location: /");
+        die();
+      } 
+    }
+
+    public function orders()
+    {
+      if($this->auth->checkAdmin()) {
+        return $this->connector->getAllOrders();
+      } else {
+        header("Location: /");
+        die();        
+      }
+      
+    }
+
+    public function edit()
+    {
+      if($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $id = $_POST['product_id'];
+        $discription = $_POST['discription'];
+        $price = $_POST['price'];
+        $colors = $_POST['colors'];
+        $colors = array_filter($colors, function($color) {
+          return strlen($color) > 0;
+        });
+
+        if(strlen($_FILES["photo"]["name"]) > 0) {
+          $allowed = array("jpg" => "image/jpg", "jpeg" => "image/jpeg", "gif" => "image/gif", "png" => "image/png");
+          $filename = $_FILES["photo"]["name"];
+          $filetype = $_FILES["photo"]["type"];
+          $ext = pathinfo($filename, PATHINFO_EXTENSION);
+          if(!array_key_exists($ext, $allowed)) die("Error: Please select a valid file format.");
+          
+          if(file_exists("upload/" . $filename)){
+            echo $filename . " is already exists.";
+          } else{
+              move_uploaded_file($_FILES["photo"]["tmp_name"], "images/" . $filename);
+              echo "Your file was uploaded successfully.";
+          }
+
+          $file = "images/" . $filename;
+
+          } else {
+            $file = $_POST['oldImage'];
+          }
+          $this->connector->editProduct($id, $discription, $price, $file, $colors);
+          header("Location: /");
+          die(); 
+       }
+       
+     }
+
 }

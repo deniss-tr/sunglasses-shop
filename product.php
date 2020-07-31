@@ -39,8 +39,10 @@
 						<?php endforeach; ?>
 					</select>
 				</div>
-				
 			</form>
+			<?php if($controller->currentUser()->checkAuth()): ?>
+			<a class="btn" href="edit.php?id=<?= $product->getId(); ?>" >EDIT PRODUCT</a>
+			<?php endif; ?>
 		</main>
 	</div>
 

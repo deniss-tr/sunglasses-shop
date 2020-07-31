@@ -73,4 +73,60 @@ class Connector extends Dbh {
         $data = $this->connect()->query($sql);
         return $data;
     }
+    public function checkUser($login, $password)
+    {
+        $stmt = $this->connect()->prepare("SELECT login, status FROM users WHERE login = ? AND password = ?");
+        $stmt->execute([$login, $password]);
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $data;
+    }
+    public function getAllOrders()
+    {
+        $stmt = $this->connect()->prepare("SELECT * FROM orders");
+        $stmt->execute();
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $data;        
+    }
+
+    public function editProduct($id, $description, $price, $image, $colors)
+    {
+        ///// COLORS
+        $sql = "PRAGMA table_info(colors)";
+        $colorColumns = $this->connect()->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        $availableColors = Array();
+        foreach($colorColumns as $column) {
+            if($column['name'] == 'id') {
+                continue;
+            }
+            $availableColors[] = $column['name'];
+        }
+
+        foreach($colors as $color) {
+            if(!in_array($color, $availableColors) ) {
+                $sql = "ALTER TABLE colors ADD $color INTEGER";
+                $this->connect()->query($sql);    
+            }
+        }
+        $colorsString = '(' . implode(', ', $colors) . ')';
+        $colorValuesOnes = array_map(function($item) {
+            return 1;
+        }, $colors);
+        $colorValuesString = '(' . implode(', ', $colorValuesOnes) . ')';
+
+        $sql = "INSERT INTO colors $colorsString  VALUES $colorValuesString";
+        $this->connect()->query($sql); 
+        $colorId = $this->connect()->lastInsertId();
+        ///// PRODUCT
+
+        $sql = "UPDATE products
+                SET description = '$description', price = $price, colors_id = $colorId, image = '$image'
+                WHERE id = $id";
+        $result = $this->connect()->query($sql);
+        return $result;
+    }
 }
+
+
+

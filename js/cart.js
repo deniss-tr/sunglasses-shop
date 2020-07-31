@@ -1,7 +1,18 @@
 ///////////// COOKIE /////////////
-let decodedCookie = decodeURIComponent(document.cookie);
-let arr = decodedCookie.substring(5)
-let cart = JSON.parse(arr);
+// function check_cookie_name(name) 
+//     {
+//       var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+//       if (match) {
+//         return match[2];
+//       }
+//       else{
+//            console.log('--something went wrong---');
+//       }
+//    }
+// $cart =  check_cookie_name('cart');
+// let decodedCookie = decodeURIComponent($cart);
+
+
 
 ///////////// COUNTER /////////////
 let counts = document.querySelectorAll('.item_count');

@@ -61,14 +61,17 @@ a {
   text-decoration: none;
 }
 .btn {
+
   height: 45px;
   width: auto;
   background: none;
   border: 2px solid rgb(56, 56, 56);
-  padding: 0 10px;
+  padding: 10px 10px;
   cursor: pointer;
   font-size: 20px;
   font-weight: 600;
+  color: #000;
+
 }
 .btn:hover {
   background: rgb(56, 56, 56);
@@ -155,9 +158,10 @@ input[type=number] {
 }
 /* ------------ END list ------------ */
 /* ------------ PRODUCT ------------ */
-
+.product-view {
+  text-align: center;
+}
 .product-container {
-
   text-align: center;
   padding: 20px;
 }
@@ -317,4 +321,22 @@ tr:nth-child(even){background-color: #f2f2f2}
   height: 30px;
   border: 2px solid rgb(56, 56, 56);
   padding-left: 5px;
+}
+/* ------------ END login ------------ */
+/* ------------ EDIT ------------ */
+.edit-container {
+  width: 300px;
+}
+
+.edit-container input, .edit-container textarea {
+  display: block;
+  margin: 10px 0;
+  width: 100%;
+  padding: 5px;
+  font-size: 14px;
+}
+
+.edit-container textarea {
+  min-height: 150px;
+  resize: none;
 }
